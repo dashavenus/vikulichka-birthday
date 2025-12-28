@@ -863,6 +863,12 @@
 
       viewerClose.addEventListener("click", closeViewer);
 
+      addTouchAdvance(viewer, () => {
+        if (viewer.classList.contains("active")) {
+          showNextImage();
+        }
+      });
+
       document.addEventListener("keydown", () => {
         if (viewer.classList.contains("active")) {
           showNextImage();
@@ -874,6 +880,43 @@
           }
         }
       });
+
+      const addTouchAdvance = (target, handler) => {
+        let startX = 0;
+        let startY = 0;
+        let started = false;
+
+        target.addEventListener(
+          "touchstart",
+          (event) => {
+            if (event.touches.length !== 1) return;
+            const touch = event.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            started = true;
+          },
+          { passive: true }
+        );
+
+        target.addEventListener(
+          "touchend",
+          (event) => {
+            if (!started) return;
+            started = false;
+            const touch = event.changedTouches[0];
+            const deltaX = Math.abs(touch.clientX - startX);
+            const deltaY = Math.abs(touch.clientY - startY);
+            if (deltaX < 10 && deltaY < 10) {
+              handler();
+              return;
+            }
+            if (deltaX > 30 || deltaY > 30) {
+              handler();
+            }
+          },
+          { passive: true }
+        );
+      };
 
       const memoryItems = [
         {
@@ -996,6 +1039,12 @@
 
       memoryClose.addEventListener("click", () => {
         closeMemory();
+      });
+
+      addTouchAdvance(memoryViewer, () => {
+        if (memoryViewer.classList.contains("active") && memoryReady) {
+          showNextMemory();
+        }
       });
 
       chronoCard.addEventListener("click", () => {
