@@ -590,6 +590,13 @@
         id="memoryVideo"
         playsinline
       ></video>
+      <iframe
+        class="memory-media"
+        id="memoryFrame"
+        allow="fullscreen; picture-in-picture"
+        allowfullscreen
+        title="memory"
+      ></iframe>
     </div>
     <main class="wrap">
       <section class="grid" aria-label="Разделы">
@@ -639,6 +646,7 @@
       const memoryText = document.getElementById("memoryText");
       const memoryImage = document.getElementById("memoryImage");
       const memoryVideo = document.getElementById("memoryVideo");
+      const memoryFrame = document.getElementById("memoryFrame");
 
       const assets = {
         sdr: "public/entrance-page/сдр.JPG",
@@ -881,7 +889,7 @@
         }
       });
 
-      const addTouchAdvance = (target, handler) => {
+      function addTouchAdvance(target, handler) {
         let startX = 0;
         let startY = 0;
         let started = false;
@@ -916,7 +924,7 @@
           },
           { passive: true }
         );
-      };
+      }
 
       const memoryItems = [
         {
@@ -988,6 +996,7 @@
         memoryImage.src = "";
         memoryVideo.pause();
         memoryVideo.removeAttribute("src");
+        memoryFrame.src = "";
         memoryReady = false;
       };
 
@@ -996,6 +1005,7 @@
         memoryText.textContent = text;
         memoryImage.style.display = "none";
         memoryVideo.style.display = "none";
+        memoryFrame.style.display = "none";
         memoryReady = false;
         setTimeout(closeMemory, durationMs);
       };
@@ -1009,9 +1019,20 @@
         const next = memoryRemaining.shift();
         memoryTitle.textContent = "А ты помнишь";
         memoryText.textContent = formatMemoryText(next.text);
-        const src = `${memoryBase}${next.file}`;
+        const isIframe = next.type === "iframe";
+        const src = isIframe ? next.file : `${memoryBase}${next.file}`;
+        if (isIframe) {
+          memoryVideo.pause();
+          memoryVideo.style.display = "none";
+          memoryImage.style.display = "none";
+          memoryFrame.src = src;
+          memoryFrame.style.display = "block";
+          memoryReady = true;
+          return;
+        }
         if (next.file.toLowerCase().endsWith(".mov")) {
           memoryImage.style.display = "none";
+          memoryFrame.style.display = "none";
           memoryVideo.style.display = "block";
           memoryVideo.src = src;
           memoryVideo.muted = false;
@@ -1021,6 +1042,7 @@
         } else {
           memoryVideo.pause();
           memoryVideo.style.display = "none";
+          memoryFrame.style.display = "none";
           memoryImage.src = src;
           memoryImage.style.display = "block";
           memoryReady = true;
