@@ -305,6 +305,11 @@
         padding-top: 120px;
       }
 
+      .memory-viewer.media-top {
+        align-content: start;
+        padding-top: 60px;
+      }
+
       .memory-title {
         font-size: 24px;
         font-weight: 600;
@@ -318,8 +323,8 @@
       }
 
       .memory-media {
-        max-width: min(900px, 92vw);
-        max-height: 70vh;
+        max-width: min(1100px, 96vw);
+        max-height: 78vh;
         width: auto;
         height: auto;
         border-radius: 18px;
@@ -589,6 +594,9 @@
         class="memory-media"
         id="memoryVideo"
         playsinline
+        autoplay
+        controls
+        preload="metadata"
       ></video>
       <iframe
         class="memory-media"
@@ -958,7 +966,11 @@
           text: "Как мы смотрели волчонка, лёжа у меня на даче на полу?",
           file: "12.jpg",
         },
-        { text: "", file: "13.mov" },
+        {
+          text: "",
+          file: "https://drive.google.com/file/d/1Q_aPPq7hJGuw8L7KK7hEPhUDYQB8_kSC/preview",
+          type: "iframe",
+        },
         { text: "Миша л*х?", file: "14.jpg" },
         {
           text:
@@ -992,6 +1004,7 @@
       const closeMemory = () => {
         memoryViewer.classList.remove("active");
         memoryViewer.classList.remove("end-state");
+        memoryViewer.classList.remove("media-top");
         memoryViewer.setAttribute("aria-hidden", "true");
         memoryImage.src = "";
         memoryVideo.pause();
@@ -1002,6 +1015,7 @@
 
       const showMemoryMessage = (text, durationMs) => {
         memoryViewer.classList.add("end-state");
+        memoryViewer.classList.remove("media-top");
         memoryText.textContent = text;
         memoryImage.style.display = "none";
         memoryVideo.style.display = "none";
@@ -1016,6 +1030,7 @@
           return;
         }
         memoryViewer.classList.remove("end-state");
+        memoryViewer.classList.add("media-top");
         const next = memoryRemaining.shift();
         memoryTitle.textContent = "А ты помнишь";
         memoryText.textContent = formatMemoryText(next.text);
@@ -1038,6 +1053,7 @@
           memoryVideo.muted = false;
           memoryReady = false;
           memoryVideo.currentTime = 0;
+          memoryVideo.load();
           memoryVideo.play().catch(() => {});
         } else {
           memoryVideo.pause();
