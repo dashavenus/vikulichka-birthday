@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Три раздела</title>
+    <style>
+      :root {
+        --bg: #000;
+        --card-bg: #0e0e0e;
+        --card-border: #2a2a2a;
+        --text: #f2f2f2;
+        --muted: #b7b7b7;
+        --accent: #e0c99a;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Montserrat", "Arial", sans-serif;
+        letter-spacing: 0.2px;
+      }
+
+      .wrap {
+        width: min(1100px, 92vw);
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        position: relative;
+        height: 220px;
+        padding: 18px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+        transition: transform 220ms ease, border-color 220ms ease;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.1),
+            rgba(0, 0, 0, 0.75)
+          ),
+          radial-gradient(
+          circle at 20% 20%,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.02) 45%,
+          rgba(0, 0, 0, 0) 70%
+        );
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      .card h2 {
+        font-size: 20px;
+        font-weight: 600;
+        z-index: 1;
+      }
+
+      .desc {
+        position: absolute;
+        inset: 0;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 15px;
+        line-height: 1.4;
+        color: var(--muted);
+        background: rgba(0, 0, 0, 0.72);
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 200ms ease, transform 200ms ease;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+      }
+
+      .card:hover .desc {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .entrance {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: grid;
+        place-items: center;
+        z-index: 10;
+      }
+
+      .entrance.hidden {
+        display: none;
+      }
+
+      .entrance-card {
+        width: min(640px, 92vw);
+        min-height: 240px;
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 24px;
+        background: #0b0b0b;
+        text-align: center;
+        display: grid;
+        gap: 18px;
+        place-items: center;
+      }
+
+      .entrance-title {
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      .entrance-buttons {
+        display: flex;
+        gap: 14px;
+      }
+
+      .entrance-buttons button {
+        appearance: none;
+        border: 1px solid var(--card-border);
+        background: linear-gradient(135deg, #1a1a1a, #101010);
+        color: var(--text);
+        padding: 12px 26px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        cursor: pointer;
+        transition: border-color 180ms ease, transform 180ms ease;
+      }
+
+      .entrance-buttons button:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .entrance-image {
+        width: min(420px, 70vw);
+        height: auto;
+        border-radius: 14px;
+        border: 1px solid var(--card-border);
+        display: none;
+      }
+
+      .entrance-message {
+        font-size: 20px;
+        color: var(--accent);
+        display: none;
+      }
+
+      .viewer {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+        display: none;
+        place-items: center;
+        z-index: 12;
+      }
+
+      .viewer.active {
+        display: grid;
+      }
+
+      .viewer img {
+        max-width: min(900px, 92vw);
+        max-height: 80vh;
+        width: auto;
+        height: auto;
+        border-radius: 18px;
+        border: 1px solid var(--card-border);
+      }
+
+      .viewer-close {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        border: 1px solid var(--card-border);
+        background: #151515;
+        color: var(--text);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .chrono-viewer {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.96);
+        display: none;
+        z-index: 14;
+        overflow-y: auto;
+        padding: 32px 20px 40px;
+      }
+
+      .chrono-viewer.active {
+        display: block;
+      }
+
+      .chrono-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .chrono-title {
+        font-size: 26px;
+        font-weight: 600;
+      }
+
+      .chrono-list {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .chrono-item {
+        display: grid;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 16px;
+        background: #0b0b0b;
+      }
+
+      .chrono-name {
+        font-size: 16px;
+        color: var(--text);
+      }
+
+      .chrono-frame {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .chrono-frame iframe,
+      .chrono-frame video {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+
+      .chrono-link {
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      .chrono-link:hover {
+        color: var(--accent);
+      }
+
+      .memory-viewer {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.94);
+        display: none;
+        place-items: center;
+        z-index: 13;
+        text-align: center;
+        padding: 32px 16px;
+      }
+
+      .memory-viewer.active {
+        display: grid;
+      }
+
+      .memory-viewer.end-state {
+        align-content: start;
+        padding-top: 120px;
+      }
+
+      .memory-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .memory-text {
+        font-size: 18px;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
+
+      .memory-media {
+        max-width: min(900px, 92vw);
+        max-height: 70vh;
+        width: auto;
+        height: auto;
+        border-radius: 18px;
+        border: 1px solid var(--card-border);
+        display: none;
+      }
+
+      @media (max-width: 820px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card {
+          height: 180px;
+        }
+
+        .chrono-item {
+          grid-template-columns: 1fr;
+        }
+
+        .chrono-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="entrance" id="entrance">
+      <div class="entrance-card">
+        <div class="entrance-title" id="question">Вы Викуличка?</div>
+        <img class="entrance-image" id="entranceImage" alt="" />
+        <div class="entrance-message" id="entranceMessage"></div>
+        <div class="entrance-buttons" id="entranceButtons">
+          <button type="button" data-answer="yes">да</button>
+          <button type="button" data-answer="no">нет</button>
+        </div>
+      </div>
+    </div>
+    <div class="viewer" id="noContextViewer" aria-hidden="true">
+      <button class="viewer-close" id="noContextClose" type="button">
+        закрыть
+      </button>
+      <img id="noContextImage" alt="" />
+    </div>
+    <div class="chrono-viewer" id="chronoViewer" aria-hidden="true">
+      <div class="chrono-header">
+        <div class="chrono-title">хронология</div>
+        <button class="viewer-close" id="chronoClose" type="button">
+          закрыть
+        </button>
+      </div>
+      <div class="chrono-list">
+        <div class="chrono-item">
+          <div class="chrono-name">6в поздравление на 23 февраля</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239213"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="6в поздравление на 23 февраля"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239213"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Новости</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239149"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="Новости"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239149"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Новости: За кадром</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239150"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="Новости: За кадром"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239150"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">День рождения Светланы Васильевной</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239131"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="День рождения Светланы Васильевной"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239131"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Воспоминания до распределения</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239151"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="Воспоминания до распределения"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239151"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">8бсамыйн0илучнейшийthebetterchildren$ бихайнд зэ синс</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239235"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="8бсамыйн0илучнейшийthebetterchildren$ бихайнд зэ синс"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239235"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">8бсамыйн0илучнейшийthebetterchildren$</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=115214297&id=456239233"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="8бсамыйн0илучнейшийthebetterchildren$"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video115214297_456239233"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Вспомнить всё</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://vk.com/video_ext.php?oid=66220225&id=456239947&hash=04dac349889da1cf"
+              allow="encrypted-media; fullscreen; picture-in-picture; screen-wake-lock"
+              allowfullscreen
+              title="Вспомнить всё"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://vk.com/video66220225_456239947"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на VK
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Мстители. Финал</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://www.youtube.com/embed/MdACeB4hDUU"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              title="Мстители. Финал"
+            ></iframe>
+          </div>
+          <a
+            class="chrono-link"
+            href="https://youtu.be/MdACeB4hDUU?si=JD3a6KmNDidNzIMf"
+            target="_blank"
+            rel="noreferrer"
+          >
+            открыть на YouTube
+          </a>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">Thai commercial</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://drive.google.com/file/d/1Ya72mrVPUSNoesDtEOoPrdosqu9Busu0/preview"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              title="Thai commercial"
+            ></iframe>
+          </div>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">My favourite girl</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://drive.google.com/file/d/1qUd1UIbbQrPME3Nlw4cteDdyWreLYhWi/preview"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              title="My favourite girl"
+            ></iframe>
+          </div>
+        </div>
+        <div class="chrono-item">
+          <div class="chrono-name">soulmate</div>
+          <div class="chrono-frame">
+            <iframe
+              src="https://drive.google.com/file/d/1XsQfUpA9LZHaDVC2cCxQXH4n-JNMiHXV/preview"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen
+              title="soulmate"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="memory-viewer" id="memoryViewer" aria-hidden="true">
+      <button class="viewer-close" id="memoryClose" type="button">
+        закрыть
+      </button>
+      <div class="memory-title" id="memoryTitle">А ты помнишь</div>
+      <div class="memory-text" id="memoryText"></div>
+      <img class="memory-media" id="memoryImage" alt="" />
+      <video
+        class="memory-media"
+        id="memoryVideo"
+        playsinline
+      ></video>
+    </div>
+    <main class="wrap">
+      <section class="grid" aria-label="Разделы">
+        <article
+          class="card"
+          id="chronoCard"
+          style="background-image: url('public/entrance-page/хронология.JPG')"
+        >
+          <h2>хронология</h2>
+          <div class="desc">видеоконтент созданный нами за годы дружбы</div>
+        </article>
+        <article
+          class="card"
+          id="noContextCard"
+          style="background-image: url('public/entrance-page/no%20context.JPG')"
+        >
+          <h2>no context</h2>
+          <div class="desc">наши переписки 2016-2020 годов без контекста</div>
+        </article>
+        <article
+          class="card"
+          id="memoryCard"
+          style="background-image: url('public/entrance-page/а%20ты%20помнишь%3F.JPG')"
+        >
+          <h2>а ты помнишь?</h2>
+          <div class="desc">это Дашуличка вроде еще помнит</div>
+        </article>
+      </section>
+    </main>
+    <script>
+      const entrance = document.getElementById("entrance");
+      const question = document.getElementById("question");
+      const buttons = document.getElementById("entranceButtons");
+      const image = document.getElementById("entranceImage");
+      const message = document.getElementById("entranceMessage");
+      const noContextCard = document.getElementById("noContextCard");
+      const viewer = document.getElementById("noContextViewer");
+      const viewerImage = document.getElementById("noContextImage");
+      const viewerClose = document.getElementById("noContextClose");
+      const chronoCard = document.getElementById("chronoCard");
+      const chronoViewer = document.getElementById("chronoViewer");
+      const chronoClose = document.getElementById("chronoClose");
+      const memoryCard = document.getElementById("memoryCard");
+      const memoryViewer = document.getElementById("memoryViewer");
+      const memoryClose = document.getElementById("memoryClose");
+      const memoryTitle = document.getElementById("memoryTitle");
+      const memoryText = document.getElementById("memoryText");
+      const memoryImage = document.getElementById("memoryImage");
+      const memoryVideo = document.getElementById("memoryVideo");
+
+      const assets = {
+        sdr: "public/entrance-page/сдр.JPG",
+        rock: "public/entrance-page/rock.JPG",
+        stop: "public/entrance-page/stop.JPG",
+      };
+
+      const hideAll = () => {
+        image.style.display = "none";
+        message.style.display = "none";
+        buttons.style.display = "flex";
+        question.style.display = "block";
+      };
+
+      const showMessage = (text, durationMs, withImage) =>
+        new Promise((resolve) => {
+          buttons.style.display = "none";
+          question.style.display = "none";
+          if (withImage) {
+            image.src = withImage;
+            image.style.display = "block";
+          } else {
+            image.style.display = "none";
+          }
+          if (text) {
+            message.textContent = text;
+            message.style.display = "block";
+          } else {
+            message.style.display = "none";
+          }
+          setTimeout(() => resolve(), durationMs);
+        });
+
+      const isMoscowBirthday = () => {
+        const now = new Date();
+        const parts = new Intl.DateTimeFormat("ru-RU", {
+          timeZone: "Europe/Moscow",
+          day: "2-digit",
+          month: "2-digit",
+        }).formatToParts(now);
+        const day = parts.find((part) => part.type === "day")?.value;
+        const month = parts.find((part) => part.type === "month")?.value;
+        return day === "28" && month === "12";
+      };
+
+      const finishEntrance = () => {
+        entrance.classList.add("hidden");
+      };
+
+      const handleYesFirst = async () => {
+        if (isMoscowBirthday()) {
+          await showMessage(" с днем рождения Викуля!!!", 3000, assets.sdr);
+        } else {
+          await showMessage("приятной ностальгии!", 2000);
+        }
+        finishEntrance();
+      };
+
+      const handleSecondQuestion = async (answer) => {
+        if (answer === "yes") {
+          await showMessage("приятной ностальгии", 2000);
+          finishEntrance();
+          return;
+        }
+        await showMessage("", 2000, assets.rock);
+        question.textContent = "Вы дружите с Викуличкой?";
+        hideAll();
+      };
+
+      const handleThirdQuestion = async (answer) => {
+        if (answer === "yes") {
+          await showMessage("приятного просмотра", 2000);
+          finishEntrance();
+          return;
+        }
+        await showMessage("", 3000, assets.stop);
+        window.close();
+      };
+
+      let step = 1;
+
+      buttons.addEventListener("click", async (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const answer = button.dataset.answer;
+        if (step === 1) {
+          if (answer === "yes") {
+            await handleYesFirst();
+          } else {
+            await showMessage("", 2000, assets.rock);
+            question.textContent = "Вы Дашуличка?";
+            hideAll();
+            step = 2;
+          }
+          return;
+        }
+        if (step === 2) {
+          await handleSecondQuestion(answer);
+          if (answer === "no") step = 3;
+          return;
+        }
+        if (step === 3) {
+          await handleThirdQuestion(answer);
+        }
+      });
+
+      const noContextFiles = [
+        "no context_39.jpg",
+        "no context_40.jpg",
+        "no context_43.jpg",
+        "no context_44.jpg",
+        "no context_45.jpg",
+        "no context_46.jpg",
+        "no context_47.jpg",
+        "no context_4713.jpg",
+        "no context_4731.jpg",
+        "no context_4732.jpg",
+        "no context_4733.jpg",
+        "no context_4734.jpg",
+        "no context_4736.jpg",
+        "no context_4737.jpg",
+        "no context_4738.jpg",
+        "no context_4739.jpg",
+        "no context_4740.jpg",
+        "no context_4741.jpg",
+        "no context_4745.jpg",
+        "no context_4746.jpg",
+        "no context_4747.jpg",
+        "no context_4748.jpg",
+        "no context_48.jpg",
+        "no context_49.jpg",
+        "no context_50.jpg",
+        "no context_51.jpg",
+        "no context_52.jpg",
+        "no context_53.jpg",
+        "no context_54.jpg",
+        "no context_55.jpg",
+        "no context_56.jpg",
+        "no context_57.jpg",
+        "no context_58.jpg",
+        "no context_59.PNG",
+        "no context_62.jpg",
+        "no context_64.jpg",
+        "no context_66.jpg",
+        "no context_70.jpg",
+        "no context_71.jpg",
+        "no context_72.jpg",
+        "no context_73.jpg",
+        "no context_74.jpg",
+        "no context_75.jpg",
+        "no context_76.jpg",
+        "no context_77.jpg",
+        "no context_78.jpg",
+        "no context_79.jpg",
+        "no context_80.jpg",
+        "no context_81.jpg",
+        "no context_82.jpg",
+        "no context_83.jpg",
+        "no context_84.jpg",
+        "no context_85.jpg",
+        "no context_86.jpg",
+        "no context_87.jpg",
+        "no context_88.jpg",
+        "no context_89.jpg",
+        "no context_90.jpg",
+        "no context_91.jpg",
+        "no context_92.jpg",
+        "no context_93.jpg",
+        "no context_94.jpg",
+        "no-context_27.jpg",
+        "no-context_28.jpg",
+        "no-context_30.jpg",
+        "no-context_32.jpg",
+        "no-context_33.jpg",
+        "no-context_34.jpg",
+        "no-context_35.jpg",
+        "no-context_36.jpg",
+        "no-context_37.jpg",
+        "no-context_38.PNG",
+        "no-context_57.jpg",
+        "no-context_58.jpg",
+      ];
+
+      const shuffle = (items) => {
+        const copy = [...items];
+        for (let i = copy.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      };
+
+      let remainingImages = [];
+
+      const openViewer = () => {
+        remainingImages = shuffle(noContextFiles);
+        viewer.classList.add("active");
+        viewer.setAttribute("aria-hidden", "false");
+        showNextImage();
+      };
+
+      const closeViewer = () => {
+        viewer.classList.remove("active");
+        viewer.setAttribute("aria-hidden", "true");
+        viewerImage.src = "";
+      };
+
+      const showNextImage = () => {
+        if (remainingImages.length === 0) {
+          closeViewer();
+          return;
+        }
+        const next = remainingImages.shift();
+        viewerImage.src = encodeURI(`public/no context/${next}`);
+      };
+
+      noContextCard.addEventListener("click", () => {
+        if (!viewer.classList.contains("active")) {
+          openViewer();
+        }
+      });
+
+      viewerClose.addEventListener("click", closeViewer);
+
+      document.addEventListener("keydown", () => {
+        if (viewer.classList.contains("active")) {
+          showNextImage();
+          return;
+        }
+        if (memoryViewer.classList.contains("active")) {
+          if (memoryReady) {
+            showNextMemory();
+          }
+        }
+      });
+
+      const memoryItems = [
+        {
+          text:
+            "Как мы ходили на крутую площадку, где-то рядом с твоим домом и катались на классной качели?",
+          file: "1.JPG",
+        },
+        { text: "Как мы ходили втроём с Соней на ночь музеев?", file: "2.JPG" },
+        {
+          text: "Как мы снимали новогодний фильм с одноклассниками",
+          file: "3.JPG",
+        },
+        { text: "Как мы снимали тайскую рекламу", file: "4.jpeg" },
+        { text: "Как мы проходим мою голивудскую историю?", file: "5.PNG" },
+        {
+          text: "Как ты была моей моделью для режиссерских курсов?",
+          file: "6.PNG",
+        },
+        { text: "цепь карго?", file: "7.PNG" },
+        {
+          text: "Наш Victoria’s Secret модельный фотосет у меня на даче",
+          file: "8.jpg",
+        },
+        {
+          text: "гениальнейшие декорации, которые мы делали к Marvel?",
+          file: "9.PNG",
+        },
+        { text: "эру очка?", file: "10.PNG" },
+        { text: "Как мы ходили на бал старшеклассников", file: "11.PNG" },
+        {
+          text: "Как мы смотрели волчонка, лёжа у меня на даче на полу?",
+          file: "12.jpg",
+        },
+        { text: "", file: "13.mov" },
+        { text: "Миша л*х?", file: "14.jpg" },
+        {
+          text:
+            "Как мы играли в баскетбол под проливным дождём и оставляли отпечатки наших поп на стене?",
+          file: "15.jpg",
+        },
+        {
+          text: "Как мы читали фанфики по ролям у меня на даче?",
+          file: "16.PNG",
+        },
+        { text: "", file: "17.PNG" },
+      ];
+
+      const memoryBase = "public/а-ты-помнишь%3F/";
+      let memoryRemaining = [];
+      let memoryReady = false;
+
+      const formatMemoryText = (text) => {
+        const trimmed = text.trim();
+        if (!trimmed) return "?";
+        return trimmed.endsWith("?") ? trimmed : `${trimmed}?`;
+      };
+
+      const openMemory = () => {
+        memoryRemaining = shuffle(memoryItems);
+        memoryViewer.classList.add("active");
+        memoryViewer.setAttribute("aria-hidden", "false");
+        showNextMemory();
+      };
+
+      const closeMemory = () => {
+        memoryViewer.classList.remove("active");
+        memoryViewer.classList.remove("end-state");
+        memoryViewer.setAttribute("aria-hidden", "true");
+        memoryImage.src = "";
+        memoryVideo.pause();
+        memoryVideo.removeAttribute("src");
+        memoryReady = false;
+      };
+
+      const showMemoryMessage = (text, durationMs) => {
+        memoryViewer.classList.add("end-state");
+        memoryText.textContent = text;
+        memoryImage.style.display = "none";
+        memoryVideo.style.display = "none";
+        memoryReady = false;
+        setTimeout(closeMemory, durationMs);
+      };
+
+      const showNextMemory = () => {
+        if (memoryRemaining.length === 0) {
+          showMemoryMessage("больше не помню:((", 2000);
+          return;
+        }
+        memoryViewer.classList.remove("end-state");
+        const next = memoryRemaining.shift();
+        memoryTitle.textContent = "А ты помнишь";
+        memoryText.textContent = formatMemoryText(next.text);
+        const src = `${memoryBase}${next.file}`;
+        if (next.file.toLowerCase().endsWith(".mov")) {
+          memoryImage.style.display = "none";
+          memoryVideo.style.display = "block";
+          memoryVideo.src = src;
+          memoryVideo.muted = false;
+          memoryReady = false;
+          memoryVideo.currentTime = 0;
+          memoryVideo.play().catch(() => {});
+        } else {
+          memoryVideo.pause();
+          memoryVideo.style.display = "none";
+          memoryImage.src = src;
+          memoryImage.style.display = "block";
+          memoryReady = true;
+        }
+      };
+
+      memoryVideo.addEventListener("ended", () => {
+        memoryReady = true;
+      });
+
+      memoryCard.addEventListener("click", () => {
+        if (!memoryViewer.classList.contains("active")) {
+          openMemory();
+        }
+      });
+
+      memoryClose.addEventListener("click", () => {
+        closeMemory();
+      });
+
+      chronoCard.addEventListener("click", () => {
+        if (!chronoViewer.classList.contains("active")) {
+          chronoViewer.classList.add("active");
+          chronoViewer.setAttribute("aria-hidden", "false");
+        }
+      });
+
+      chronoClose.addEventListener("click", () => {
+        chronoViewer.classList.remove("active");
+        chronoViewer.setAttribute("aria-hidden", "true");
+      });
+    </script>
+  </body>
+</html>
